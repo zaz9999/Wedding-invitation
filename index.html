@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Wedding of Usama & Rafya</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600&family=Montserrat:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --vintage-bg: #1c1310;
+            --overlay-gold: #e5b364;
+            --gold-light: #fbeed2;
+            --card-bg: rgba(28, 19, 16, 0.92);
+            --text-main: #f5eedc;
+            --accent-red: #d94336;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0b0706;
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        .camcorder-viewport {
+            width: 100%;
+            max-width: 430px;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, rgba(20, 12, 10, 0.8), rgba(20, 12, 10, 0.8)), 
+                        url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80') center/cover fixed;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            border-left: 1px solid rgba(229, 179, 100, 0.3);
+            border-right: 1px solid rgba(229, 179, 100, 0.3);
+            padding-bottom: 80px;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 90;
+            opacity: 0.6;
+        }
+
+        #coverOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #1c1310;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease;
+        }
+
+        #coverOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .cover-box {
+            width: 85%;
+            max-width: 360px;
+            border: 2px solid var(--overlay-gold);
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .press-to-play-btn {
+            margin-top: 25px;
+            display: inline-block;
+            background: var(--overlay-gold);
+            color: #1c1310;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            border-radius: 20px;
+            animation: pulseBtn 1.5s infinite;
+        }
+
+        @keyframes pulseBtn {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(229, 179, 100, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(229, 179, 100, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(229, 179, 100, 0); }
+        }
+
+        .audio-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 999;
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            color: var(--overlay-gold);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .cam-header {
+            position: fixed;
+            top: 15px; left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: 410px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            font-family: 'VT323', monospace;
+            color: #ffffff;
+            font-size: 1.2rem;
+            text-shadow: 0 0 4px #000;
+            pointer-events: none;
+        }
+
+        .rec-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        .rec-dot {
+            width: 10px; height: 10px;
+            background-color: var(--accent-red);
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .cam-footer-stamp {
+            position: fixed;
+            bottom: 15px;
+            right: calc(50% - 195px);
+            font-family: 'VT323', monospace;
+            color: var(--overlay-gold);
+            font-size: 1.3rem;
+            z-index: 100;
+            text-shadow: 0 0 5px #000;
+            pointer-events: none;
+        }
+
+        @media (max-width: 430px) {
+            .cam-footer-stamp { right: 20px; }
+        }
+
+        .section {
+            padding: 50px 20px 30px 20px;
+            position: relative;
+        }
+
+        .hero-box {
+            border: 2px solid var(--overlay-gold);
+            padding: 30px 15px;
+            background: var(--card-bg);
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+
+        .hero-names {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.2rem;
+            color: var(--gold-light);
+            font-style: italic;
+            line-height: 1.2;
+            margin: 15px 0;
+        }
+
+        .scroll-down-btn {
+            margin-top: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--overlay-gold);
+            padding: 8px 22px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--gold-light);
+            background: rgba(0,0,0,0.6);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .tab-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .tab-headers {
+            display: flex;
+            border-bottom: 1px solid var(--overlay-gold);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--overlay-gold);
+            color: #1c1310;
+        }
+
+        .tab-content {
+            padding: 30px 20px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .family-names-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            color: var(--overlay-gold);
+            line-height: 1.6;
+        }
+
+        .message-box {
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            padding: 30px 20px;
+            border-radius: 6px;
+        }
+
+        .message-note {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: var(--gold-light);
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .event-pills-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .event-pill {
+            border: 1px solid var(--overlay-gold);
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(229, 179, 100, 0.1);
+        }
+
+        .scratch-box {
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            margin-top: 15px;
+            border: 1px solid var(--overlay-gold);
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .scratch-reveal {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            color: #1c1310;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scratch-reveal h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--accent-red);
+        }
+
+        canvas#staticCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            cursor: pointer;
+        }
+
+        .countdown-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .count-box {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--overlay-gold);
+            padding: 8px;
+            min-width: 60px;
+            border-radius: 4px;
+        }
+
+        .count-num {
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            color: var(--overlay-gold);
+            display: block;
+        }
+
+        .count-lbl {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+        }
+
+        .flash-event-card {
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            border-radius: 6px;
+            padding: 25px 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .pop-message {
+            position: absolute;
+            top: 10px; right: 15px;
+            background: var(--accent-red);
+            color: white;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .event-title-main {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            color: var(--overlay-gold);
+            text-transform: uppercase;
+        }
+
+        .event-info-text {
+            font-size: 0.85rem;
+            margin: 15px 0;
+            color: #d1c7bd;
+            line-height: 1.7;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            background: var(--overlay-gold);
+            color: #1c1310;
+            padding: 8px 14px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .couple-poetry-box {
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            padding: 25px 20px;
+            border-radius: 6px;
+        }
+
+        .poetry-card {
+            border-bottom: 1px dashed rgba(229, 179, 100, 0.3);
+            padding: 15px 0;
+        }
+
+        .poetry-card:last-child {
+            border-bottom: none;
+        }
+
+        .poetry-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.25rem;
+            color: var(--gold-light);
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .poet-name {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--overlay-gold);
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .dress-code-box {
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            padding: 25px 20px;
+            border-radius: 6px;
+        }
+
+        .dress-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(229, 179, 100, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .rsvp-box {
+            background: var(--card-bg);
+            border: 1px solid var(--overlay-gold);
+            padding: 25px 20px;
+            border-radius: 6px;
+        }
+
+        .rsvp-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--overlay-gold);
+            color: white;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .whatsapp-submit-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .outro-box {
+            border: 2px solid var(--overlay-gold);
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border-radius: 6px;
+        }
+
+        .rewind-btn {
+            background: transparent;
+            border: 2px solid var(--overlay-gold);
+            color: var(--overlay-gold);
+            padding: 10px 25px;
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop preload="auto" playsinline>
+    <source src="https://raw.githubusercontent.com/zaz9999/Wedding-invitation/main/veere_di_wedding.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="bgMusic" loop preload="auto" playsinline>
+    <source src="https://ia600909.us.archive.org/5/items/veerey-di-wedding-mika-singh-entertainment-2014-bollywood-song/Veerey%20Di%20Wedding%20_%20Mika%20Singh%20_%20Entertainment%20_%202014%20_%20Bollywood%20Song.mp3" type="audio/mpeg">
+</audio>
+
+    <button class="audio-toggle-btn" onclick="toggleAudio()">
+        <i class="fa-solid fa-music" id="audioIcon"></i>
+    </button>
+
+    <div id="coverOverlay" onclick="startInvitation()">
+        <div class="cover-box">
+            <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--gold-light); font-style: italic;">The Wedding of</h1>
+            <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--overlay-gold); margin: 10px 0;">Usama & Rafya</h2>
+            <div class="press-to-play-btn">PRESS TO PLAY</div>
+        </div>
+    </div>
+
+    <div class="cam-header">
+        <div class="rec-badge"><div class="rec-dot"></div> REC</div>
+        <div>PLAY <i class="fa-solid fa-play" style="font-size: 0.8rem;"></i></div>
+        <div>SP 0:00:00</div>
+    </div>
+
+    <div class="cam-footer-stamp">DEC 08 2026</div>
+
+    <div class="camcorder-viewport" id="mainViewport">
+
+        <div class="section" id="page1">
+            <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--overlay-gold); margin-bottom: 6px;">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+            <p style="font-size: 0.78rem; color: var(--overlay-gold); margin-bottom: 15px; letter-spacing: 1px;">In the name of God, the most Gracious, the most Merciful</p>
+            <p style="font-style: italic; font-size: 0.85rem; color: #d1c7bd; line-height: 1.6;">"And among His signs is that He created for you mates from among yourselves, that you may find tranquility in them."</p>
+            <p style="font-size: 0.7rem; color: var(--overlay-gold); margin-top: 4px;">SURAH AR-RUM (30:21)</p>
+
+            <div class="hero-box">
+                <div style="font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--overlay-gold);">WITH LOVE</div>
+                <div class="hero-names">Usama<br><span style="font-size: 1.5rem; color: var(--overlay-gold);">&</span><br>Rafya</div>
+            </div>
+
+            <p style="margin-top: 25px; font-style: italic; font-size: 0.95rem; color: var(--gold-light);">We can't wait to celebrate with you.</p>
+            <a href="#page2" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page2">
+            <div style="font-size: 0.75rem; letter-spacing: 3px; color: var(--overlay-gold); text-transform: uppercase; margin-bottom: 10px;">FAMILIES</div>
+            <div class="tab-wrapper">
+                <div class="tab-headers">
+                    <button class="tab-btn active" onclick="switchTab('groom')">GROOM'S SIDE</button>
+                    <button class="tab-btn" onclick="switchTab('bride')">BRIDE'S SIDE</button>
+                </div>
+                
+                <div class="tab-content active" id="groomTab">
+                    <div class="family-names-text">Mr. & Mrs.<br>Shabbir Ahmed Tabassum</div>
+                </div>
+
+                <div class="tab-content" id="brideTab">
+                    <div class="family-names-text">Mr. & Mrs.<br>M. Shahid</div>
+                </div>
+            </div>
+            <a href="#page3" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page3">
+            <div class="message-box">
+                <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--overlay-gold);">My Dear,</div>
+                <div class="message-note">
+                    "Your presence is the blessing we asking for. Over these few day two families we become one, and it would not be complete without those peoples who loved us all over our lives . come eat with us , pray with us , dance with us , pray with us and also enjoy with us."
+                </div>
+                <div class="event-pills-row">
+                    <div class="event-pill">Mehndi</div>
+                    <div class="event-pill">Baraat</div>
+                    <div class="event-pill">Walima</div>
+                </div>
+            </div>
+            <a href="#page4" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page4">
+            <div class="scratch-box">
+                <div style="font-size: 0.75rem; letter-spacing: 2px; color: var(--overlay-gold); text-transform: uppercase;">COUNTDOWN</div>
+                <div class="scratch-container">
+                    <div class="scratch-reveal">
+                        <div style="font-size: 0.65rem; letter-spacing: 2px; color: #666;">SAVE THE DATE</div>
+                        <h3>08 - 12 - 2026</h3>
+                        <div style="font-size: 0.75rem; color: #888;">Sialkot, Pakistan</div>
+                    </div>
+                    <canvas id="staticCanvas" width="350" height="140"></canvas>
+                </div>
+                <div style="font-size: 0.7rem; color: #a09588; margin-top: 6px;">No Signal - Scratch here to find the date</div>
+
+                <div class="countdown-row">
+                    <div class="count-box"><span class="count-num" id="days">00</span><span class="count-lbl">Days</span></div>
+                    <div class="count-box"><span class="count-num" id="hours">00</span><span class="count-lbl">Hours</span></div>
+                    <div class="count-box"><span class="count-num" id="minutes">00</span><span class="count-lbl">Mins</span></div>
+                    <div class="count-box"><span class="count-num" id="seconds">00</span><span class="count-lbl">Secs</span></div>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--overlay-gold); margin-top: 10px; font-weight: bold;">Until Mehndi</div>
+            </div>
+            <a href="#page5" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page5">
+            <div class="flash-event-card" onclick="triggerPop(this)">
+                <div class="pop-message">MASHALLAH!</div>
+                <div style="font-size: 0.65rem; letter-spacing: 2px; color: var(--overlay-gold); margin-bottom: 5px;">TAP ANYWHERE FOR A PHOTO FLASH</div>
+                <div class="event-title-main">Mehndi</div>
+                <div class="event-info-text">
+                    08 - Dec - 2026, Tuesday • 7:00 PM<br>
+                    <span style="color: var(--overlay-gold); font-weight: bold;">In House</span>
+                </div>
+                <div class="btn-row">
+                    <a href="https://maps.google.com" target="_blank" class="action-btn">OPEN LOCATION</a>
+                    <button class="action-btn" onclick="addToCal('Mehndi', '2026-12-08T19:00:00')">ADD TO CALENDAR</button>
+                </div>
+            </div>
+            <a href="#page6" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page6">
+            <div class="flash-event-card" onclick="triggerPop(this)">
+                <div class="pop-message">MASHALLAH!</div>
+                <div style="font-size: 0.65rem; letter-spacing: 2px; color: var(--overlay-gold); margin-bottom: 5px;">TAP ANYWHERE FOR A PHOTO FLASH</div>
+                <div class="event-title-main">Baraat</div>
+                <div class="event-info-text">
+                    09 - Dec - 2026, Tuesday • 6:00 PM<br>
+                    <span style="color: var(--overlay-gold); font-weight: bold;">Hamza marque</span><br>
+                    Airport Road, Kapurowali, Pakistan
+                </div>
+                <div class="btn-row">
+                    <a href="https://maps.google.com" target="_blank" class="action-btn">OPEN LOCATION</a>
+                    <button class="action-btn" onclick="addToCal('Baraat', '2026-12-09T18:00:00')">ADD TO CALENDAR</button>
+                </div>
+            </div>
+            <a href="#page7" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page7">
+            <div class="flash-event-card" onclick="triggerPop(this)">
+                <div class="pop-message">MASHALLAH!</div>
+                <div style="font-size: 0.65rem; letter-spacing: 2px; color: var(--overlay-gold); margin-bottom: 5px;">TAP ANYWHERE FOR A PHOTO FLASH</div>
+                <div class="event-title-main">Walima</div>
+                <div class="event-info-text">
+                    10 - Dec - 2026, Wednesday • 6:00 PM<br>
+                    <span style="color: var(--overlay-gold); font-weight: bold;">Iqbal marque</span><br>
+                    Airport Road, Kapurowali, Pakistan
+                </div>
+                <div class="btn-row">
+                    <a href="https://maps.google.com" target="_blank" class="action-btn">OPEN LOCATION</a>
+                    <button class="action-btn" onclick="addToCal('Walima', '2026-12-10T18:00:00')">ADD TO CALENDAR</button>
+                </div>
+            </div>
+            <a href="#page8" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page8">
+            <div style="font-size: 0.8rem; letter-spacing: 3px; color: var(--overlay-gold); text-transform: uppercase; margin-bottom: 15px;">THE COUPLE</div>
+            <div class="couple-poetry-box">
+                <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold-light); margin-bottom: 15px;">Usama & Rafya</div>
+                
+                <div class="poetry-card">
+                    <div class="poetry-text">"مجھ سے پہلی سی محبت میری محبوب نہ مانگ<br>تیری صورت سے ہے عالم میں بہاروں کو ثبات"</div>
+                    <div class="poet-name">— Faiz Ahmed Faiz</div>
+                </div>
+
+                <div class="poetry-card">
+                    <div class="poetry-text">"سکل بن پھول بن رہی سرسوں<br>امبوا پھولے، ٹیسو پھولے، گوری سیگار کر کے آئیں"</div>
+                    <div class="poet-name">— Amir Khusro</div>
+                </div>
+
+                <div class="poetry-card">
+                    <div class="poetry-text">"ہزاروں خواہشیں ایسی کہ ہر خواہش پہ دم نکلے<br>بہت نکلے میرے ارمان لیکن پھر بھی کم نکلے"</div>
+                    <div class="poet-name">— Mirza Ghalib</div>
+                </div>
+
+                <div class="poetry-card">
+                    <div class="poetry-text">"نازکی اس کے لب کی کیا کہئے<br>پنکھڑی اک گلاب کی سی ہے"</div>
+                    <div class="poet-name">— Meer Taqi Meer</div>
+                </div>
+
+                <div class="poetry-card">
+                    <div class="poetry-text">"عشق دی نویں نویں بہار<br>جاگ کے کٹیا راتاں، ملیا دلبر یار"</div>
+                    <div class="poet-name">— Baba Bulleh Shah</div>
+                </div>
+
+                <div style="font-size: 0.8rem; color: var(--overlay-gold); font-style: italic; margin-top: 15px;">Two Hearts, One Promise</div>
+            </div>
+            <a href="#page9" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page9">
+            <div class="dress-code-box">
+                <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--overlay-gold); margin-bottom: 10px;">Dress Code</div>
+                <p style="font-size: 0.82rem; color: #d1c7bd; line-height: 1.6; margin-bottom: 15px; font-style: italic;">
+                    "Traditional festive and occasion wear for every function no proper and decided dress code and no one was forced to follow one dress code , tradtional festive and occasionn wear are all best"
+                </p>
+                <div class="dress-item"><span>Mehndi</span><span style="color: var(--overlay-gold);">Festive and occasion based</span></div>
+                <div class="dress-item"><span>Baraat</span><span style="color: var(--overlay-gold);">Formal festive and occasion based</span></div>
+                <div class="dress-item"><span>Walima</span><span style="color: var(--overlay-gold);">Formal festive and occasion based</span></div>
+            </div>
+            <a href="#page10" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page10">
+            <div class="rsvp-box">
+                <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--overlay-gold); margin-bottom: 6px;">Send Wishes & RSVP</div>
+                <div style="font-size: 0.72rem; color: #a09588; margin-bottom: 15px;">Directly to Groom's Father: Mr. Shabbir Ahmed Tabassum</div>
+                
+                <input type="text" id="rsvpName" class="rsvp-input" placeholder="Your Name">
+                <textarea id="rsvpMsg" class="rsvp-input" rows="3" placeholder="Write your warm wishes here..."></textarea>
+                <button class="whatsapp-submit-btn" onclick="sendWhatsAppRSVP()">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> SEND VIA WHATSAPP
+                </button>
+            </div>
+            <a href="#page11" class="scroll-down-btn"><i class="fa-solid fa-chevron-down"></i> SCROLL DOWN</a>
+        </div>
+
+        <div class="section" id="page11">
+            <div class="outro-box">
+                <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold-light); line-height: 1.4;">THANKS FOR WATCHING - SEE YOU THERE</div>
+                <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--overlay-gold); font-style: italic; margin-top: 10px;">USAMA WEDS RAFYA</div>
+                
+                <button class="rewind-btn" onclick="rewindToTop()">
+                    <i class="fa-solid fa-backward-fast"></i> REWIND
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+    const song = document.getElementById('bgMusic');
+
+    function startInvitation() {
+        const overlay = document.getElementById('coverOverlay');
+        // Instantly hide overlay to prevent any freeze
+        overlay.classList.add('hidden');
+        
+        if (song) {
+            song.play().then(() => {
+                document.getElementById('audioIcon').className = "fa-solid fa-music";
+            }).catch(e => {
+                console.log("Audio deferred or file missing:", e);
+            });
+        }
+    }
+
+    function toggleAudio() {
+        if (!song) return;
+        if (song.paused) {
+            song.play();
+            document.getElementById('audioIcon').className = "fa-solid fa-music";
+        } else {
+            song.pause();
+            document.getElementById('audioIcon').className = "fa-solid fa-volume-xmark";
+        }
+    }
+
+    function switchTab(side) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        if (side === 'groom') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('groomTab').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('brideTab').classList.add('active');
+        }
+    }
+
+    const canvas = document.getElementById('staticCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        function generateStatic() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const imgData = ctx.createImageData(w, h);
+            const buffer = new Uint32Array(imgData.data.buffer);
+            for (let i = 0; i < buffer.length; i++) {
+                buffer[i] = Math.random() < 0.5 ? 0xffffffff : 0xff000000;
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+        generateStatic();
+
+        let isScratching = false;
+        function scratch(e) {
+            if (!isScratching) return;
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(clientX - rect.left, clientY - rect.top, 25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        canvas.addEventListener('mousedown', () => isScratching = true);
+        window.addEventListener('mouseup', () => isScratching = false);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('touchstart', () => isScratching = true, {passive: true});
+        window.addEventListener('touchend', () => isScratching = false, {passive: true});
+        canvas.addEventListener('touchmove', scratch, {passive: true});
+    }
+
+    function triggerPop(card) {
+        const pop = card.querySelector('.pop-message');
+        pop.style.opacity = '1';
+        setTimeout(() => { pop.style.opacity = '0'; }, 1200);
+    }
+
+    function addToCal(event, dateStr) {
+        const title = encodeURIComponent(`Usama & Rafya Wedding - ${event}`);
+        window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateStr.replace(/[-:]/g, '')}/${dateStr.replace(/[-:]/g, '')}`);
+    }
+
+    function sendWhatsAppRSVP() {
+        const name = document.getElementById('rsvpName').value.trim();
+        const msg = document.getElementById('rsvpMsg').value.trim();
+        const phone = "923187212717"; // Mr. Shabbir Ahmed Tabassum
+
+        if (!name) {
+            alert("Please enter your name.");
+            return;
+        }
+
+        const text = `*Wedding Wishes & RSVP - Usama & Rafya*%0A*Name:* ${encodeURIComponent(name)}%0A*Wishes:* ${encodeURIComponent(msg)}`;
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    }
+
+    function rewindToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const targetDate = new Date("Dec 8, 2026 19:00:00").getTime();
+    setInterval(() => {
+        const now = new Date().getTime();
+        const dist = targetDate - now;
+
+        if (dist > 0) {
+            document.getElementById("days").innerText = String(Math.floor(dist / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            document.getElementById("hours").innerText = String(Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(Math.floor((dist % (1000 * 60)) / 1000)).padStart(2, '0');
+        }
+    }, 1000);
+</script>
+
+</body>
+</html>
